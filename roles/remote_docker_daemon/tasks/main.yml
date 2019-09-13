@@ -1,0 +1,57 @@
+- name: Assert mandatory variables are defined
+  assert:
+    that:
+      - docker_cert_passphrase is defined
+      - docker_data_root is defined
+      - client_cert_folder_path is defined
+
+- name: Create the daemon.json file
+  template:
+    src: daemon.json.j2
+    dest: /etc/docker/daemon.json
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart docker
+
+- name: Ensure /var/docker exists
+  file:
+    path: /var/docker
+    state: directory
+
+- name: Move a script to generate certificates
+  template:
+    src: create_certs.sh.j2
+    dest: /var/docker/create_certs.sh
+    mode: 'u+x'
+
+- name: Generate the certificates
+  command: /var/docker/create_certs.sh
+  args:
+    creates: /var/docker/ca.pem
+
+- name: Ensure the folder to store client certs exists
+  file:
+    path: "{{ client_cert_folder_path }}"
+    state: directory
+  delegate_to: 127.0.0.1
+  run_once: true
+
+# - name: Retrieve the client certificates
+#   fetch:
+#     src: "/var/docker/{{ item }}"
+#     dest: "{{ client_cert_folder_path }}/{{ item }}"
+#     flat: yes
+#   run_once: true
+#   with_items:
+#     - ca.pem
+#     - cert.pem
+#     - key.pem
+
+- name: Ensure docker listen on tcp port 4444
+  lineinfile:
+    path: /lib/systemd/system/docker.service
+    regexp: '^ExecStart='
+    state: present
+    line: ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock  -H tcp://0.0.0.0:4444
+  notify: Restart docker

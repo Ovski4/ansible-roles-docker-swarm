@@ -1,0 +1,3 @@
+---
+dependencies:
+  - role: remote_docker_daemon

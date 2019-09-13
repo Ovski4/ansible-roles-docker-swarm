@@ -1,0 +1,15 @@
+- name: Make sure docker-pip is present
+  pip:
+    name: docker
+
+- name: Init a new swarm
+  docker_swarm:
+    state: present
+
+- name: Retrieve the swarm worker token
+  shell: docker swarm join-token -q worker
+  register: swarm_worker_token
+  changed_when: False
+
+- debug:
+    msg: "Worker token : {{ swarm_worker_token['stdout'] }}"
