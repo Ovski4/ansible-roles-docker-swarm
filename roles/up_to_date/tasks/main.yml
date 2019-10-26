@@ -24,3 +24,25 @@
     update_cache: yes
     autoremove: yes
     autoclean: yes
+  register: updated_packages
+
+- name: List updated packages
+  shell: grep -E "^$(date +%Y-%m-%d).+ (install|upgrade) " /var/log/dpkg.log | cut -d " " -f 3-5
+  register: updated_packages_list
+  when: updated_packages.changed
+
+- name: Show updated packages
+  debug:
+    msg: "{{ updated_packages_list.stdout_lines }}"
+  changed_when: True
+  when: updated_packages.changed
+
+- name: Check if the file /var/run/reboot-required is present
+  stat:
+      path: /var/run/reboot-required
+  register: reboot_required
+  changed_when: False
+
+- name: Reboot machine if needed
+  reboot:
+  when: reboot_required.stat.exists == True
