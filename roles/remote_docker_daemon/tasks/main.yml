@@ -37,16 +37,16 @@
   delegate_to: 127.0.0.1
   run_once: true
 
-# - name: Retrieve the client certificates
-#   fetch:
-#     src: "/var/docker/{{ item }}"
-#     dest: "{{ client_cert_folder_path }}/{{ item }}"
-#     flat: yes
-#   run_once: true
-#   with_items:
-#     - ca.pem
-#     - cert.pem
-#     - key.pem
+- name: Retrieve the client certificates
+  fetch:
+    src: "/var/docker/{{ item }}"
+    dest: "{{ client_cert_folder_path }}/{{ item }}"
+    flat: yes
+  run_once: true
+  with_items:
+    - ca.pem
+    - cert.pem
+    - key.pem
 
 - name: Ensure docker listen on tcp port 4444
   lineinfile:
