@@ -49,9 +49,9 @@
     - key.pem
 
 - name: Ensure docker listen on tcp port 4444
-  lineinfile:
+  ini_file:
     path: /lib/systemd/system/docker.service
-    regexp: '^ExecStart='
-    state: present
-    line: ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock  -H tcp://0.0.0.0:4444
+    section: Service
+    option: ExecStart
+    value: /usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock  -H tcp://0.0.0.0:4444
   notify: Restart docker
