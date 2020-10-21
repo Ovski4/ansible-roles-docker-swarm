@@ -55,3 +55,6 @@
     option: ExecStart
     value: /usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock  -H tcp://0.0.0.0:4444
   notify: Restart docker
+
+- name: Force all notified handlers to run
+  meta: flush_handlers

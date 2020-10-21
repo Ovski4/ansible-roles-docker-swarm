@@ -13,3 +13,4 @@
 
 - debug:
     msg: "Worker token : {{ swarm_worker_token['stdout'] }}"
+  when: not ansible_check_mode
