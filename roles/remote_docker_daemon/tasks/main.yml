@@ -25,10 +25,39 @@
     dest: /var/docker/create_certs.sh
     mode: 'u+x'
 
+- name: Check if certificates already exists
+  stat:
+    path: /var/docker/cert.pem
+  register: certificates_file
+
+- name: Check if certificates are expired
+  command: openssl x509 -checkend 86400 -noout -in /var/docker/cert.pem
+  register: certificates_expired
+  when: certificates_file.stat.exists
+  changed_when: False
+  failed_when: >
+    (certificates_expired.rc != 0 and certificates_expired.rc != 1) or
+    (certificates_expired.rc == 1 and certificates_expired.stdout != 'Certificate will expire')
+
+- name: Delete expired certificates
+  file:
+    path: /var/docker/{{ item }}
+    state: absent
+  with_items:
+    - ca.pem
+    - cert.pem
+    - key.pem
+    - ca.srl
+    - ca-key.pem
+    - server-cert.pem
+    - server-key.pem
+  when: certificates_expired.rc == 1 and certificates_expired.stdout == 'Certificate will expire'
+
 - name: Generate the certificates
   command: /var/docker/create_certs.sh
   args:
     creates: /var/docker/ca.pem
+  notify: Restart docker
 
 - name: Ensure the folder to store client certs exists
   file:
