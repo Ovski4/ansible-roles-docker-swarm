@@ -1,6 +1,7 @@
 - name: The aptitude package is present
   apt:
     name: "{{ packages }}"
+    update_cache: yes
   vars:
     packages:
       - aptitude
