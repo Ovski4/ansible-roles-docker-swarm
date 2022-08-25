@@ -1,7 +1,6 @@
 - name: Assert mandatory variables are defined
   assert:
     that:
-      - swarm_manager_token is defined
       - swarm_manager_addr is defined
 
 - name: Make sure docker-pip is present
@@ -11,7 +10,7 @@
 - name: The worker node is joined to the manager
   docker_swarm:
     state: join
-    join_token: "{{ swarm_worker_token }}"
+    join_token: "{{ hostvars[groups.swarm_managers[0]].swarm_worker_token.stdout }}"
     advertise_addr: "{{ swarm_manager_addr }}"
     remote_addrs:
       - "{{ swarm_manager_addr }}"
