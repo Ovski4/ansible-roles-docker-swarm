@@ -11,7 +11,7 @@
 - name: The worker node is joined to the manager
   docker_swarm:
     state: join
-    join_token: "{{ swarm_manager_token }}"
+    join_token: "{{ swarm_worker_token }}"
     advertise_addr: "{{ swarm_manager_addr }}"
     remote_addrs:
       - "{{ swarm_manager_addr }}"
