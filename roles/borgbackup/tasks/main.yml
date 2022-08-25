@@ -20,7 +20,7 @@
       - libacl1
       - build-essential
       - libfuse-dev
-      - fuse
+      - fuse3
       - pkg-config
 
 - name: The borgbackup package is present
