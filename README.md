@@ -1,7 +1,7 @@
 Ansible docker swarm roles
 ==========================
 
-Roles to spin up a small docker swarm quickly.
+Roles to spin up a small docker swarm quickly. Tested on ubuntu server 22.04.
 
 Example
 -------
@@ -61,7 +61,6 @@ all:
     - up_to_date
     - swarm_worker
   vars:
-    swarm_manager_token: SWMTKN-1-4c5rb7z6311ekono3aez1wtqleplno2or2z6jlnhm-70k-x4tvstx4kr6d96yu6fy0h
     swarm_manager_addr: manager.domain.net:2377
 
 ```
