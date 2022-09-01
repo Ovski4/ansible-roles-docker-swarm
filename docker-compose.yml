@@ -3,7 +3,7 @@ version: '3.7'
 services:
 
   play:
-    image: ovski/ansible:v4.0.0
+    image: ovski/ansible:v2.13.3
     volumes:
       - ./:/var/www/ansible
       - ./hosts:/etc/ansible/hosts
