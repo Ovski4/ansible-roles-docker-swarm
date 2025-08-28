@@ -13,4 +13,21 @@ services:
     command: >
       ansible-playbook /var/www/ansible/main.yml
     environment:
-      - ANSIBLE_HOST_KEY_CHECKING=False
+      ANSIBLE_HOST_KEY_CHECKING: "False"
+    profiles: [ansible]
+
+  semaphore:
+    ports:
+      - 80:3000
+    image: public.ecr.aws/semaphore/pro/server:v2.16.18
+    environment:
+      SEMAPHORE_DB_DIALECT: sqlite
+      SEMAPHORE_ADMIN: admin
+      SEMAPHORE_ADMIN_PASSWORD: P@ssword123
+      SEMAPHORE_ADMIN_NAME: Baptiste
+      SEMAPHORE_ADMIN_EMAIL: baptiste.bouchereau@gmail.com
+      ANSIBLE_HOST_KEY_CHECKING: "False"
+    volumes:
+      - ./semaphore_volume/data:/var/lib/semaphore
+      - ./semaphore_volume/config:/etc/semaphore
+      - ./semaphore_volume/tmp:/tmp/semaphore
