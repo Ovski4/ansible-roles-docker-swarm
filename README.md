@@ -70,7 +70,7 @@ all:
 ```bash
 ansible-playbook /var/www/ansible/main.yml
 # or
-docker-compose run play
+docker compose run play
 ```
 
 ### Docker daemon manager access
