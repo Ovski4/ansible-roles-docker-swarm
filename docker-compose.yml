@@ -1,4 +1,4 @@
-version: '3.7'
+name: 'configuration_management'
 
 services:
 
@@ -13,4 +13,5 @@ services:
     command: >
       ansible-playbook /var/www/ansible/main.yml
     environment:
-      - ANSIBLE_HOST_KEY_CHECKING=False
+      ANSIBLE_HOST_KEY_CHECKING: "False"
+    profiles: [ansible]
