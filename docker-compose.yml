@@ -30,3 +30,5 @@ services:
       - ./semaphore_volume/data:/var/lib/semaphore
       - ./semaphore_volume/config:/etc/semaphore
       - ./semaphore_volume/tmp:/tmp/semaphore
+      - ./semaphore_volume/ssh:/home/semaphore/.ssh:ro
+      - ${DOCKER_CERTS}:/etc/docker_certs
