@@ -1,3 +1,3 @@
-playbooks/
 hosts
 semaphore_volume
+.env
