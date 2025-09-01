@@ -7,9 +7,8 @@ services:
     volumes:
       - ./:/var/www/ansible
       - ./hosts:/etc/ansible/hosts
-      - ~/.ssh/id_rsa_manager:/root/.ssh/id_rsa_manager
-      - ~/.ssh/id_rsa_worker:/root/.ssh/id_rsa_worker
-      - /home/user/.docker/manager_certs:/home/user/.docker/manager_certs
+      - ${SSH_KEY}:/root/.ssh/id_rsa
+      - ${DOCKER_CERTS}:/var/www/ansible/docker_certs
     command: >
       ansible-playbook /var/www/ansible/main.yml
     environment:
