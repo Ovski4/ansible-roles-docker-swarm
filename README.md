@@ -6,6 +6,8 @@ Roles to spin up a small docker swarm quickly. Tested on ubuntu server 22.04.
 Example
 -------
 
+Update the variables as needed.
+
 ### hosts
 
 ```yml
@@ -31,38 +33,18 @@ all:
     swarm_managers:
       hosts:
         manager:
+      vars:
+        docker_cert_passphrase: passhere
+        docker_data_root: /home/docker
+        client_cert_folder_path: /home/user/.docker/manager_certs
     swarm_workers:
       hosts:
         worker:
+      vars:
+        swarm_manager_addr: manager.domain.net:2377
     backup_servers:
       hosts:
         worker:
-```
-
-### main.yml
-
-```yml
----
-- hosts: swarm_managers
-  roles:
-    - up_to_date
-    - swarm_manager
-  vars:
-    docker_cert_passphrase: passhere
-    docker_data_root: /home/docker
-    client_cert_folder_path: /home/user/.docker/manager_certs
-
-- hosts: backup_servers
-  roles:
-    - borgbackup
-
-- hosts: swarm_workers
-  roles:
-    - up_to_date
-    - swarm_worker
-  vars:
-    swarm_manager_addr: manager.domain.net:2377
-
 ```
 
 ### Run the play

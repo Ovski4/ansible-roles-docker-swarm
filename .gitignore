@@ -1,4 +1,2 @@
-playbooks/
 hosts
-/main.yml
 semaphore_volume
