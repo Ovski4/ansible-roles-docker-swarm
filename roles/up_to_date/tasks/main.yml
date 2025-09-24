@@ -44,4 +44,4 @@
 
 - name: Reboot machine if needed
   reboot:
-  when: reboot_required.stat.exists == True
+  when: reboot_required.stat.exists == True and not skip_reboot|default(False)
