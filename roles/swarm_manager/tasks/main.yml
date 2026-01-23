@@ -1,6 +1,8 @@
-- name: Make sure docker-pip is present
-  pip:
-    name: docker
+- name: Make sure python3-docker is present
+  apt:
+    name: python3-docker
+    state: present
+    update_cache: yes
 
 - name: Init a new swarm
   docker_swarm:
