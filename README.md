@@ -1,7 +1,10 @@
 Ansible docker swarm roles
 ==========================
 
-Roles to spin up a small docker swarm quickly. Tested on ubuntu server 22.04.
+Roles to spin up a small docker swarm quickly.
+
+- Tag v1.0.0 tested on ubuntu server 22.04.
+- Master + tag v2.* tested on ubuntu server 24.04.
 
 Setup
 ------
