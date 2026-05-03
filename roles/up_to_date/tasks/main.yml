@@ -35,6 +35,3 @@
 - name: Reboot machine if needed
   ansible.builtin.reboot:
   when: up_to_date_reboot_required.stat.exists and not skip_reboot|default(false)
-
-- name:  Display updated packages if applicable
-  ansible.builtin.meta: flush_handlers

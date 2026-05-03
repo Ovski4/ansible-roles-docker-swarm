@@ -1,5 +1,7 @@
 - name: List updated packages
   ansible.builtin.shell: set -o pipefail; grep -E "^$(date +%Y-%m-%d).+ (install|upgrade) " /var/log/dpkg.log | cut -d " " -f 3-5
+  args:
+    executable: /bin/bash
   register: up_to_date_updated_packages_list
   notify: Show updated packages
   changed_when: false
