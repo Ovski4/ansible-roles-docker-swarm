@@ -23,8 +23,22 @@
     update_cache: true
     autoremove: true
     autoclean: true
-  notify:
-    - List updated packages
+  register: up_to_date_updated_packages
+
+- name: List updated packages
+  ansible.builtin.shell: set -o pipefail; grep -E "^$(date +%Y-%m-%d).+ (install|upgrade) " /var/log/dpkg.log | cut -d " " -f 3-5
+  args:
+    executable: /bin/bash
+  changed_when: false
+  register: up_to_date_updated_packages_list
+  when: up_to_date_updated_packages.changed
+  # noqa no-handler
+
+- name: Show updated packages
+  ansible.builtin.debug:
+    msg: "{{ up_to_date_updated_packages_list.stdout_lines }}"
+  when: up_to_date_updated_packages.changed
+  # noqa no-handler
 
 - name: Check if the file /var/run/reboot-required is present
   ansible.builtin.stat:
