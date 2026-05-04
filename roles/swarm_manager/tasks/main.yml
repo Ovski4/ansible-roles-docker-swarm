@@ -1,18 +1,19 @@
 - name: Make sure python3-docker is present
-  apt:
+  ansible.builtin.apt:
     name: python3-docker
     state: present
-    update_cache: yes
+    update_cache: true
 
 - name: Init a new swarm
-  docker_swarm:
+  community.docker.docker_swarm:
     state: present
 
 - name: Retrieve the swarm worker token
-  shell: docker swarm join-token -q worker
-  register: swarm_worker_token
-  changed_when: False
+  ansible.builtin.command: docker swarm join-token -q worker
+  register: swarm_manager_worker_token
+  changed_when: false
 
-- debug:
-    msg: "Worker token : {{ swarm_worker_token['stdout'] }}"
+- name: Show swarm worker token
+  ansible.builtin.debug:
+    msg: "Worker token : {{ swarm_manager_worker_token['stdout'] }}"
   when: not ansible_check_mode

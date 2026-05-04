@@ -1,12 +1,12 @@
 - name: Assert mandatory variables are defined
-  assert:
+  ansible.builtin.assert:
     that:
       - docker_cert_passphrase is defined
       - docker_data_root is defined
       - client_cert_folder_path is defined
 
 - name: Create the daemon.json file
-  template:
+  ansible.builtin.template:
     src: daemon.json.j2
     dest: /etc/docker/daemon.json
     owner: root
@@ -15,32 +15,33 @@
   notify: Restart docker
 
 - name: Ensure /var/docker exists
-  file:
+  ansible.builtin.file:
     path: /var/docker
     state: directory
+    mode: '0755'
 
 - name: Move a script to generate certificates
-  template:
+  ansible.builtin.template:
     src: create_certs.sh.j2
     dest: /var/docker/create_certs.sh
     mode: 'u+x'
 
 - name: Check if certificates already exists
-  stat:
+  ansible.builtin.stat:
     path: /var/docker/cert.pem
-  register: certificates_file
+  register: remote_docker_daemon_certificates_file
 
 - name: Check if certificates are expired
-  command: openssl x509 -checkend 86400 -noout -in /var/docker/cert.pem
-  register: certificates_expired
-  when: certificates_file.stat.exists
-  changed_when: False
+  ansible.builtin.command: openssl x509 -checkend 86400 -noout -in /var/docker/cert.pem
+  register: remote_docker_daemon_certificates_expired
+  when: remote_docker_daemon_certificates_file.stat.exists
+  changed_when: false
   failed_when: >
-    (certificates_expired.rc != 0 and certificates_expired.rc != 1) or
-    (certificates_expired.rc == 1 and certificates_expired.stdout != 'Certificate will expire')
+    (remote_docker_daemon_certificates_expired.rc != 0 and remote_docker_daemon_certificates_expired.rc != 1) or
+    (remote_docker_daemon_certificates_expired.rc == 1 and remote_docker_daemon_certificates_expired.stdout != 'Certificate will expire')
 
 - name: Delete expired certificates
-  file:
+  ansible.builtin.file:
     path: /var/docker/{{ item }}
     state: absent
   with_items:
@@ -51,26 +52,27 @@
     - ca-key.pem
     - server-cert.pem
     - server-key.pem
-  when: certificates_expired.rc == 1 and certificates_expired.stdout == 'Certificate will expire'
+  when: remote_docker_daemon_certificates_expired.rc == 1 and remote_docker_daemon_certificates_expired.stdout == 'Certificate will expire'
 
 - name: Generate the certificates
-  command: /var/docker/create_certs.sh
+  ansible.builtin.command: /var/docker/create_certs.sh
   args:
     creates: /var/docker/ca.pem
   notify: Restart docker
 
 - name: Ensure the folder to store client certs exists
-  file:
+  ansible.builtin.file:
     path: "{{ client_cert_folder_path }}"
     state: directory
+    mode: '0700'
   delegate_to: 127.0.0.1
   run_once: true
 
 - name: Retrieve the client certificates
-  fetch:
+  ansible.builtin.fetch:
     src: "/var/docker/{{ item }}"
     dest: "{{ client_cert_folder_path }}/{{ item }}"
-    flat: yes
+    flat: true
   run_once: true
   with_items:
     - ca.pem
@@ -78,12 +80,13 @@
     - key.pem
 
 - name: Ensure docker listen on tcp port 4444
-  ini_file:
+  community.general.ini_file:
     path: /lib/systemd/system/docker.service
     section: Service
     option: ExecStart
     value: /usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock  -H tcp://0.0.0.0:4444
+    mode: '644'
   notify: Restart docker
 
-- name: Force all notified handlers to run
-  meta: flush_handlers
+- name: Restart docker if necessary
+  ansible.builtin.meta: flush_handlers

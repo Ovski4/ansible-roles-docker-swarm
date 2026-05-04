@@ -1,13 +1,13 @@
 - name: The user 'backup_user' is present
-  user:
+  ansible.builtin.user:
     name: backup_user
     shell: /bin/bash
-    generate_ssh_key: yes
+    generate_ssh_key: true
 
 - name: The borgbackup dependencies are present
-  apt:
+  ansible.builtin.apt:
     name: "{{ packages }}"
-    update_cache: yes
+    update_cache: true
   vars:
     packages:
       - python3
@@ -24,13 +24,14 @@
       - pkg-config
 
 - name: The borgbackup package is present
-  apt:
+  ansible.builtin.apt:
     name: borgbackup
 
 - name: The borg repository folder is present
-  file:
+  ansible.builtin.file:
     path: /home/backup_user/borg_repositories
     state: directory
-  become: yes
-  become_method: su
+    mode: '775'
+  become: true
+  become_method: ansible.builtin.su
   become_user: backup_user
